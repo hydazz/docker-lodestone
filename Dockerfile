@@ -9,13 +9,14 @@ RUN \
   apt-get update && \
   apt-get install -y --no-install-recommends \
     build-essential \
+    ca-certificates \
     curl \
     gnupg2 \
     jq \
     libssl-dev \
     pkg-config && \
   curl https://sh.rustup.rs -sSf | sh -s -- -y && \
-  source /root/.cargo/env && \
+  . /root/.cargo/env && \
   echo "**** download lodestone ****" && \
   mkdir -p \
     /tmp/lodestone \
