@@ -5,7 +5,7 @@ project_name: lodestone
 project_url: "https://www.lodestone.cc/"
 project_logo: "https://github.com/Lodestone-Team/lodestone_core/raw/main/readme/lodestone_logo.svg"
 project_blurb: |
-  [Lodestone]({{ project_url }})
+  [Lodestone]({{ project_url }}) Don't use
 project_github_repo_url: "https://github.com/imagegenius/docker-{{ project_name }}"
 
 # development version

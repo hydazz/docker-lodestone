@@ -1,3 +1,4 @@
+# build lodestone
 FROM rust:latest as builder
 
 RUN \
@@ -20,7 +21,7 @@ RUN \
   cd /tmp/lodestone && \
     cargo install --path .
 
-FROM ghcr.io/imagegenius/baseimage-alpine-glibc:latest
+FROM ghcr.io/imagegenius/baseimage-ubuntu:jammy
 
 # set version label
 ARG BUILD_DATE
@@ -32,17 +33,19 @@ LABEL maintainer="hydazz"
 # environment settings
 ENV LODESTONE_PATH=/config
 
-COPY --from=builder /tmp/lodestone/target/release /app/lodestone
+COPY --from=builder /tmp/lodestone/target/release/main /app/lodestone
 
 RUN \
-  echo "**** install build packages ****" && \
-  apk add --no-cache --virtual=build-dependencies \
-    jq && \
-  echo "**** install runtime packages ****" && \
-  apk add --no-cache \
-    libssl1.1 && \
+  apt-get update && \
+  apt-get install -y --no-install-recommends \
+    cpuidtool \
+    libcpuid-dev && \
+  echo "**** cleanup ****" && \
+  apt-get clean && \
   rm -rf \
-    /tmp/*
+    /tmp/* \
+    /var/lib/apt/lists/* \
+    /var/tmp/*
 
 # copy local files
 COPY root/ /
