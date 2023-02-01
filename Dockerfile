@@ -1,16 +1,19 @@
-# build lodestone
+# build lodestone stage
 FROM ubuntu:jammy as builder
 
-HOME="/root"
+# environment settings
+ARG LODESTONE_VERSION
+ENV HOME="/root"
 
 RUN \
   apt-get update && \
   apt-get install -y --no-install-recommends \
+    build-essential \
     curl \
-    pkg-config \
-    libssl-dev \
     gnupg2 \
-    jq && \
+    jq \
+    libssl-dev \
+    pkg-config && \
   curl https://sh.rustup.rs -sSf | sh -s -- -y && \
   source /root/.cargo/env && \
   echo "**** download lodestone ****" && \
@@ -31,6 +34,7 @@ RUN \
     cargo build --release && \
     cargo install --path . --root /out
 
+# runtime stage
 FROM ghcr.io/imagegenius/baseimage-ubuntu:jammy
 
 # set version label
@@ -43,14 +47,14 @@ LABEL maintainer="hydazz"
 # environment settings
 ENV LODESTONE_PATH=/config
 
-COPY --from=builder /out /app/lodestone
+COPY --from=builder /out/bin /app/lodestone
 
 RUN \
   apt-get update && \
   apt-get install -y --no-install-recommends \
     cpuidtool \
-    libssl-dev \
-    libcpuid-dev && \
+    libcpuid-dev \
+    libssl-dev && \
   echo "**** cleanup ****" && \
   apt-get clean && \
   rm -rf \
