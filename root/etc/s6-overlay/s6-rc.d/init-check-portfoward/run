@@ -1,0 +1,9 @@
+#!/usr/bin/with-contenv bash
+
+# Check if the port is open on WAN IP address
+wan_ip=$(curl -s https://checkip.amazonaws.com)
+nc -z $wan_ip ${EXTERNAL_PORT:-16662}
+if [ $? -ne 0 ]; then
+	echo "WARNING: Lodestone does not appear to be accessible on port ${EXTERNAL_PORT:-16662} outside of the LAN ($wan_ip)"
+	echo "WARNING: Perhaps you have improper port forwarding rules?"
+fi
