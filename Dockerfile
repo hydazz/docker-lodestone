@@ -1,13 +1,22 @@
 # build lodestone
-FROM rust:latest as builder
+FROM ubuntu:jammy as builder
+
+HOME="/root"
 
 RUN \
   apt-get update && \
   apt-get install -y --no-install-recommends \
+    curl \
+    pkg-config \
+    libssl-dev \
+    gnupg2 \
     jq && \
+  curl https://sh.rustup.rs -sSf | sh -s -- -y && \
+  source /root/.cargo/env && \
   echo "**** download lodestone ****" && \
   mkdir -p \
-    /tmp/lodestone && \
+    /tmp/lodestone \
+    /out && \
   if [ -z ${LODESTONE_VERSION} ]; then \
     LODESTONE_VERSION=$(curl -sL https://api.github.com/repos/Lodestone-Team/lodestone_core/releases/latest | \
       jq -r '.tag_name'); \
@@ -19,7 +28,8 @@ RUN \
     /tmp/lodestone.tar.gz -C \
     /tmp/lodestone --strip-components=1 && \
   cd /tmp/lodestone && \
-    cargo install --path .
+    cargo build --release && \
+    cargo install --path . --root /out
 
 FROM ghcr.io/imagegenius/baseimage-ubuntu:jammy
 
@@ -33,12 +43,13 @@ LABEL maintainer="hydazz"
 # environment settings
 ENV LODESTONE_PATH=/config
 
-COPY --from=builder /tmp/lodestone/target/release/main /app/lodestone
+COPY --from=builder /out /app/lodestone
 
 RUN \
   apt-get update && \
   apt-get install -y --no-install-recommends \
     cpuidtool \
+    libssl-dev \
     libcpuid-dev && \
   echo "**** cleanup ****" && \
   apt-get clean && \
