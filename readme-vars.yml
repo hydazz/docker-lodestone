@@ -1,0 +1,46 @@
+---
+
+# project information
+project_name: lodestone
+project_url: "https://www.lodestone.cc/"
+project_logo: "https://github.com/Lodestone-Team/lodestone_core/raw/main/readme/lodestone_logo.svg"
+project_blurb: |
+  [Lodestone]({{ project_url }})
+project_github_repo_url: "https://github.com/imagegenius/docker-{{ project_name }}"
+
+# development version
+development_versions: true
+development_versions_items:
+  - { tag: "latest", desc: "Latest Lodestone release with an Alpine Base" }
+
+# supported architectures
+available_architectures:
+  - { arch: "{{ arch_x86_64 }}", tag: "amd64-latest"}
+
+# container parameters
+param_container_name: "{{ project_name }}"
+param_usage_include_vols: true
+param_volumes:
+  - { vol_path: "/config", vol_host_path: "path_to_appdata", desc: "Appdata Path" }
+
+param_usage_include_ports: true
+param_ports:
+  - { external_port: "16662", internal_port: "16662", port_desc: "WebUI Port" }
+param_usage_include_env: true
+param_env_vars:
+  - { env_var: "TZ", env_value: "Australia/Melbourne", desc: "Specify a timezone to use, eg. Australia/Melbourne"}
+
+# optional container parameters
+opt_param_usage_include_env: false
+
+# unraid template
+unraid_category: ""
+
+# application setup block
+app_setup_block_enabled: true
+app_setup_block: |
+  Here comes the sun
+
+# changelog
+changelogs:
+  - { date: "01.02.23:", desc: "Initial Commit." }
